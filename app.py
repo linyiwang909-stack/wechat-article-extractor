@@ -283,8 +283,11 @@ def main() -> None:
         def log_message(self, fmt, *args):
             print(fmt % args)
 
-    server = ThreadingHTTPServer(("127.0.0.1", int(os.environ.get("PORT", "8765"))), Handler)
-    print(f"Wechat extractor listening on http://127.0.0.1:{server.server_port}")
+    host = os.environ.get("HOST", "127.0.0.1")
+    if os.environ.get("RENDER"):
+        host = "0.0.0.0"
+    server = ThreadingHTTPServer((host, int(os.environ.get("PORT", "8765"))), Handler)
+    print(f"Wechat extractor listening on http://{host}:{server.server_port}")
     server.serve_forever()
 
 
