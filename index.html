@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>公众号文章提取器</title>
+  <style>
+    :root {
+      --ink: #182230;
+      --muted: #6d7684;
+      --line: #dfe4ea;
+      --accent: #1677ff;
+      --accent-dark: #0f5ed1;
+      --surface: #fff;
+      --bg: #f4f6f8;
+      --green: #1b9a6a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+    }
+
+    .shell {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 54px 24px 70px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      align-items: flex-end;
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      line-height: 1.2;
+      letter-spacing: -.02em;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 690px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(25, 42, 65, .06);
+    }
+
+    .input-panel {
+      padding: 24px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid #cfd6df;
+      border-radius: 7px;
+      padding: 14px 15px;
+      font: inherit;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(22, 119, 255, .12);
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 0 20px;
+      min-height: 48px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      color: white;
+      background: var(--accent);
+    }
+
+    .primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .primary:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .secondary {
+      color: #1d5b47;
+      background: #e8f6ef;
+    }
+
+    .status {
+      min-height: 24px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status.error {
+      color: #b33a3a;
+    }
+
+    .result {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(250px, .8fr);
+      gap: 20px;
+    }
+
+    .preview {
+      padding: 24px;
+    }
+
+    .preview h2 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      line-height: 1.35;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      padding-bottom: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .article-text {
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 8px;
+      margin-top: 18px;
+    }
+
+    .article-text p {
+      margin: 0 0 12px;
+      color: #3c4655;
+      line-height: 1.75;
+    }
+
+    .aside {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .stat {
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stat:last-child {
+      border-bottom: 0;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 3px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .note {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 42px 20px;
+      color: var(--muted);
+    }
+
+    @media (max-width:760px) {
+      .shell {
+        padding: 32px 16px 50px
+      }
+
+      .hero {
+        display: block
+      }
+
+      .badge {
+        display: inline-block;
+        margin-top: 18px
+      }
+
+      h1 {
+        font-size: 30px
+      }
+
+      .row {
+        display: block
+      }
+
+      .row button {
+        width: 100%;
+        margin-top: 10px
+      }
+
+      .result {
+        grid-template-columns: 1fr
+      }
+
+      .aside {
+        min-height: 0
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">WECHAT ARTICLE TOOL</div>
+        <h1>公众号文章提取器</h1>
+        <p class="lead">粘贴一篇微信公众号文章链接，提取标题、正文和配图，并整理成可编辑的 Word 文档。</p>
+      </div>
+    </header>
+    <section class="panel input-panel">
+      <label for="url">文章链接</label>
+      <div class="row"><input id="url" type="url" placeholder="https://mp.weixin.qq.com/s/..."
+          value="https://mp.weixin.qq.com/s/DzESUao0ZmCsRx6kBmLdZA" /><button id="extract" class="primary">提取文章</button>
+      </div>
+      <div id="status" class="status" role="status"></div>
+    </section>
+    <section id="result" class="result" hidden>
+      <article class="panel preview">
+        <h2 id="title"></h2>
+        <div id="meta" class="meta"></div>
+        <div id="article-text" class="article-text"></div>
+      </article>
+      <aside class="panel aside">
+        <div>
+          <div class="stat"><strong id="word-count">0</strong><span>正文字符</span></div>
+          <div class="stat"><strong id="image-count">0</strong><span>文章配图</span></div>
+        </div>
+        <div>
+          <p class="note">导出的 Word 会保留文章标题、正文段落和可访问的图片。公众号页面若限制图片访问，图片会在文档中以文字提示保留。</p><button id="export"
+            class="secondary" style="width:100%">导出 Word 文档</button>
+        </div>
+      </aside>
+    </section>
+    <section id="empty" class="panel empty">文章提取后，正文预览会显示在这里。</section>
+  </main>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let current = null;
+    function setStatus(message, error = false) {$('status').textContent = message; $('status').className = 'status' + (error ? ' error' : '');}
+    $('extract').addEventListener('click', async () => {
+      const url = $('url').value.trim();
+      if (!url) return setStatus('请先粘贴微信公众号文章链接', true);
+      $('extract').disabled = true; setStatus('正在读取文章内容，请稍候…');
+      try {const res = await fetch('/api/extract', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url})}); const data = await res.json(); if (!res.ok) throw new Error(data.error || '提取失败'); current = data; $('title').textContent = data.title; $('meta').textContent = [data.author, data.date].filter(Boolean).join(' · ') || '微信公众号文章'; $('article-text').innerHTML = ''; data.blocks.forEach(b => {const p = document.createElement('p'); p.textContent = b.text; $('article-text').appendChild(p)}); $('word-count').textContent = data.blocks.reduce((n, b) => n + b.text.length, 0).toLocaleString(); $('image-count').textContent = data.imageCount; $('result').hidden = false; $('empty').hidden = true; setStatus('提取完成，可以预览或导出 Word。');} catch (e) {setStatus(e.message, true);} finally {$('extract').disabled = false;}
+    });
+    $('export').addEventListener('click', async () => {if (!current) return setStatus('请先提取文章，再导出 Word', true); $('export').disabled = true; setStatus('正在整理 Word 文档并下载图片…'); try {const res = await fetch('/api/export', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: current.url})}); const data = await res.json(); if (!res.ok) throw new Error(data.error || '导出失败'); const a = document.createElement('a'); a.href = data.download; a.download = data.filename; document.body.appendChild(a); a.click(); a.remove(); setStatus('Word 文档已生成，下载已开始。');} catch (e) {setStatus('导出失败：' + e.message, true);} finally {$('export').disabled = false;} });
+    $('url').addEventListener('keydown', e => {if (e.key === 'Enter') $('extract').click()});
+  </script>
+</body>
+
+</html>
