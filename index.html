@@ -99,6 +99,11 @@
       outline: none;
     }
 
+    input::placeholder {
+      color: #9aa3af;
+      opacity: 1;
+    }
+
     input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(22, 119, 255, .12);
@@ -270,8 +275,7 @@
     </header>
     <section class="panel input-panel">
       <label for="url">文章链接</label>
-      <div class="row"><input id="url" type="url" placeholder="https://mp.weixin.qq.com/s/..."
-          value="https://mp.weixin.qq.com/s/DzESUao0ZmCsRx6kBmLdZA" /><button id="extract" class="primary">提取文章</button>
+      <div class="row"><input id="url" type="url" placeholder="请输入微信公众号文章分享链接" /><button id="extract" class="primary">提取文章</button>
       </div>
       <div id="status" class="status" role="status"></div>
     </section>
